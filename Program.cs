@@ -1,38 +1,27 @@
 // JaveragesLibrary/Program.cs
-
-using JaveragesLibrary.Services.Features.Mangas; // ¡// No olvides el using!
-using JaveragesLibrary.Services.Features.Geometry; // Asegúrate de tener este using
-
-
-// ...
+using JaveragesLibrary.Services.Features.Geometry;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddSingleton<AreaCalculationService>();
 
 // Add services to the container.
-
-// AQUÍ REGISTRAMOS NUESTRO SERVICIO
-// Explicaremos Scoped vs Singleton vs Transient más adelante. Por ahora, Scoped es un buen comienzo.
-builder.Services.AddSingleton<MangaService>();
+builder.Services.AddSingleton<GeometryCalculationService>();
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(options => // Configuración opcional para Swagger
+builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
     {
         Version = "v1",
-        Title = "APIV2 API",
-        Description = "Una API para gestionar una increíble colección de mangas",
+        Title = "Geometry API",
+        Description = "An API for geometric calculations",
         Contact = new Microsoft.OpenApi.Models.OpenApiContact
         {
-            Name = "Tu Nombre/Equipo",
-            Url = new Uri("https://tuwebsite.com") // Cambia esto
+            Name = "Your Name/Team",
+            Url = new Uri("https://yourwebsite.com")
         }
     });
 });
-
 
 var app = builder.Build();
 
@@ -40,15 +29,15 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI(options => // Para que Swagger apunte a nuestra V1 por defecto
+    app.UseSwaggerUI(options =>
     {
-        options.SwaggerEndpoint("/swagger/v1/swagger.json", "MangaBot API V1");
-        options.RoutePrefix = string.Empty; // Para que Swagger UI esté en la raíz (http://localhost:XXXX/)
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "Geometry API V1");
+        options.RoutePrefix = string.Empty;
     });
 }
 
 app.UseHttpsRedirection();
-app.UseAuthorization(); // Lo veremos más adelante
-app.MapControllers();   // Para que las peticiones lleguen a nuestros Controllers
+app.UseAuthorization();
+app.MapControllers();
 
 app.Run();
