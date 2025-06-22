@@ -4,7 +4,7 @@ using JaveragesLibrary.Services.Features.Geometry;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddSingleton<GeometryCalculationService>();
+builder.Services.AddScoped<GeometryCalculationService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

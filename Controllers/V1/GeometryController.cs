@@ -1,74 +1,78 @@
 // JaveragesLibrary/Controllers/V1/GeometryController.cs
 using JaveragesLibrary.Services.Features.Geometry;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Threading.Tasks; // <-- Se añade este using
 
-namespace JaveragesLibrary.Controllers.V1;
-
-[ApiController]
-[Route("api/v1/[controller]")]
-public class GeometryController : ControllerBase
+namespace JaveragesLibrary.Controllers.V1
 {
-    private readonly GeometryCalculationService _geometryService;
-
-    public GeometryController(GeometryCalculationService geometryService)
+    [ApiController]
+    [Route("api/v1/[controller]")]
+    public class GeometryController : ControllerBase
     {
-        _geometryService = geometryService;
-    }
+        private readonly GeometryCalculationService _geometryService;
 
-    [HttpGet("rectangleArea")]
-    public IActionResult GetRectangleArea([FromQuery] double width, [FromQuery] double height)
-    {
-        if (width <= 0 || height <= 0)
+        public GeometryController(GeometryCalculationService geometryService)
         {
-            return BadRequest(new { Message = "Width and height must be positive values." });
+            _geometryService = geometryService;
         }
 
-        try
+        [HttpGet("rectangleArea")]
+        public async Task<IActionResult> GetRectangleAreaAsync([FromQuery] double width, [FromQuery] double height)
         {
-            double area = _geometryService.CalculateRectangleArea(width, height);
-            return Ok(new { Shape = "Rectangle", Width = width, Height = height, Area = area });
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(new { Message = ex.Message });
-        }
-    }
+            if (width <= 0 || height <= 0)
+            {
+                return BadRequest(new { Message = "Width and height must be positive values." });
+            }
 
-    [HttpGet("cubeVolume")]
-    public IActionResult GetCubeVolume([FromQuery] double sideLength)
-    {
-        if (sideLength <= 0)
-        {
-            return BadRequest(new { Message = "Side length must be a positive value." });
-        }
-
-        try
-        {
-            double volume = _geometryService.CalculateCubeVolume(sideLength);
-            return Ok(new { Shape = "Cube", SideLength = sideLength, Volume = volume });
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(new { Message = ex.Message });
-        }
-    }
-
-    [HttpGet("cylinderVolume")]
-    public IActionResult GetCylinderVolume([FromQuery] double radius, [FromQuery] double height)
-    {
-        if (radius <= 0 || height <= 0)
-        {
-            return BadRequest(new { Message = "Radius and height must be positive values." });
+            try
+            {
+                // Ahora esperamos que el método del servicio también sea asíncrono
+                double area = await _geometryService.CalculateRectangleAreaAsync(width, height);
+                return Ok(new { Shape = "Rectangle", Width = width, Height = height, Area = area });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { Message = ex.Message });
+            }
         }
 
-        try
+        [HttpGet("cubeVolume")]
+        public async Task<IActionResult> GetCubeVolumeAsync([FromQuery] double sideLength)
         {
-            double volume = _geometryService.CalculateCylinderVolume(radius, height);
-            return Ok(new { Shape = "Cylinder", Radius = radius, Height = height, Volume = volume });
+            if (sideLength <= 0)
+            {
+                return BadRequest(new { Message = "Side length must be a positive value." });
+            }
+
+            try
+            {
+                double volume = await _geometryService.CalculateCubeVolumeAsync(sideLength);
+                return Ok(new { Shape = "Cube", SideLength = sideLength, Volume = volume });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { Message = ex.Message });
+            }
         }
-        catch (ArgumentException ex)
+
+        [HttpGet("cylinderVolume")]
+        public async Task<IActionResult> GetCylinderVolumeAsync([FromQuery] double radius, [FromQuery] double height)
         {
-            return BadRequest(new { Message = ex.Message });
+            if (radius <= 0 || height <= 0)
+            {
+                return BadRequest(new { Message = "Radius and height must be positive values." });
+            }
+
+            try
+            {
+                double volume = await _geometryService.CalculateCylinderVolumeAsync(radius, height);
+                return Ok(new { Shape = "Cylinder", Radius = radius, Height = height, Volume = volume });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { Message = ex.Message });
+            }
         }
     }
 }
