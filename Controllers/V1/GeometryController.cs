@@ -2,12 +2,14 @@
 using JaveragesLibrary.Services.Features.Geometry;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Threading.Tasks; // <-- Se añade este using
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace JaveragesLibrary.Controllers.V1
 {
     [ApiController]
     [Route("api/v1/[controller]")]
+    [Authorize]
     public class GeometryController : ControllerBase
     {
         private readonly GeometryCalculationService _geometryService;
