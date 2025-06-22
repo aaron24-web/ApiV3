@@ -1,12 +1,1 @@
-{
-  "Version": 1,
-  "Hash": "PoRqxDt7hBrr5JwN4SuWrBJALO28Fvn7go4/6YxD0FM=",
-  "Source": "ApiV2",
-  "BasePath": "_content/ApiV2",
-  "Mode": "Default",
-  "ManifestType": "Build",
-  "ReferencedProjectsConfiguration": [],
-  "DiscoveryPatterns": [],
-  "Assets": [],
-  "Endpoints": []
-}
+{"Version":1,"Hash":"PoRqxDt7hBrr5JwN4SuWrBJALO28Fvn7go4/6YxD0FM=","Source":"ApiV2","BasePath":"_content/ApiV2","Mode":"Default","ManifestType":"Build","ReferencedProjectsConfiguration":[],"DiscoveryPatterns":[],"Assets":[],"Endpoints":[]}
