@@ -1,14 +1,19 @@
 // JaveragesLibrary/Program.cs
 
 using System.Text;
+using JaveragesLibrary.Data;
+using JaveragesLibrary.Mappings;
+using JaveragesLibrary.Repositories;
 using JaveragesLibrary.Services.Features.Geometry;
+using JaveragesLibrary.Services.Features.Historial;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// --- Configuración de CORS ---
+// Configuración de CORS
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 builder.Services.AddCors(options =>
 {
@@ -18,12 +23,23 @@ builder.Services.AddCors(options =>
     });
 });
 
-// --- Configuración de Servicios ---
-builder.Services.AddScoped<GeometryCalculationService>();
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
+// Configura el DbContext
+var connectionString = builder.Configuration.GetConnectionString("SupabaseConnection");
+builder.Services.AddDbContext<GeometryDbContext>(options =>
+    options.UseNpgsql(connectionString, npgsqlOptions =>
+    {
+        npgsqlOptions.CommandTimeout(60); // Aumenta el timeout a 60 segundos
+    }));
 
-// --- Configuración de Autenticación JWT ---
+// Añade AutoMapper
+builder.Services.AddAutoMapper(typeof(MappingProfile));
+
+// Registro de todos los servicios
+builder.Services.AddScoped<GeometryCalculationService>();
+builder.Services.AddScoped<HistorialRepository>();
+builder.Services.AddScoped<HistorialService>();
+
+// Configuración de Autenticación JWT
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -40,11 +56,20 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 builder.Services.AddAuthorization();
 
-// --- Configuración de Swagger para que muestre el botón de "Authorize" ---
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+
+// --- CONFIGURACIÓN COMPLETA DE SWAGGERGEN ---
 builder.Services.AddSwaggerGen(options =>
 {
-    // ... (la configuración de SwaggerDoc que ya tenías) ...
-    options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Version = "v1", Title = "Geometry API" });
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Version = "v1",
+        Title = "Geometry API",
+        Description = "An API for geometric calculations"
+    });
+
+    // Esta parte añade el botón "Authorize"
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         In = ParameterLocation.Header,
@@ -76,7 +101,6 @@ if (app.Environment.IsDevelopment())
 // app.UseHttpsRedirection();
 app.UseCors(MyAllowSpecificOrigins);
 
-// El orden es importante:
 app.UseAuthentication();
 app.UseAuthorization();
 
